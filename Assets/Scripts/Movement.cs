@@ -1,16 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine; //monobehaviour class present in unity engine namespace
+
 
 public class Movement : MonoBehaviour //inheriting monobehaviour class
 {
-    Rigidbody rigidbody; //rigidbody type variable
+
     [SerializeField] float playerThrust = 1f;
     [SerializeField] float playerRotation = 1f;
-    // Start is called before the first frame update
+    [SerializeField] AudioClip engineThrust;
+
+
+    Rigidbody rigidbody; //rigidbody type variable
+    AudioSource audioSource;
+    
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>(); //catching reference of rigid body
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -26,6 +31,14 @@ public class Movement : MonoBehaviour //inheriting monobehaviour class
         {
             rigidbody.AddRelativeForce(Vector3.up * playerThrust * Time.deltaTime);//vector3.up is a short hand for(0, 1, 0) 
             //relative force is used to add force related to the cordinates of the object
+           if(!audioSource.isPlaying)
+            {
+                audioSource.PlayOneShot(engineThrust);
+            }
+        }
+        else
+        {
+            audioSource.Stop();
         }
         
     }
