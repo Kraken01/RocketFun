@@ -7,16 +7,38 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] AudioClip crashSound;
     [SerializeField] AudioClip successSound;
 
+    [SerializeField] ParticleSystem crashParticles;
+    [SerializeField] ParticleSystem succesParticles;
+   
     AudioSource audiosource;
 
     bool isAlive = false;
+    bool collisionDisabled = false;
     private void Start()
     {
         audiosource = GetComponent<AudioSource>();
     }
+
+    private void Update()
+    {
+        RespondToDebugKeys(); 
+    }
+
+    void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionDisabled = !collisionDisabled;
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
-        if (isAlive) { return; }
+        if (isAlive || collisionDisabled) { return; }
         switch(collision.gameObject.tag)
         {
             case "Friendly":
@@ -36,6 +58,7 @@ public class CollisionHandler : MonoBehaviour
         isAlive = true;
         audiosource.Stop();
         audiosource.PlayOneShot(crashSound);
+        crashParticles.Play();
         GetComponent<Movement>().enabled = false;
         Invoke("ReloadLevel",timeToReload);  
     }
@@ -45,6 +68,7 @@ public class CollisionHandler : MonoBehaviour
         isAlive = true;
         audiosource.Stop();
         audiosource.PlayOneShot(successSound);
+        succesParticles.Play();
         GetComponent<Movement>().enabled = false;
         Invoke("LoadNextLevel", timeToReload);
     }
